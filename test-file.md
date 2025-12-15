@@ -1,3 +1,3 @@
-# Random text to be encrypted.
+# Random text to be encrypted
 
-# Hello World!!
+## Hello World
