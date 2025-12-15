@@ -3,8 +3,8 @@
 # --------------------------------------
 Add-Type -AssemblyName System.Security
 
-$InputFile  = Join-Path $PSScriptRoot "..\TPAI_HKCU_HKLM.reg"
-$OutputFile = Join-Path $PSScriptRoot "..\TPAI_HKCU_HKLM.reg.enkrypted"
+$InputFile  = Join-Path $PSScriptRoot "..\test-file.md"
+$OutputFile = Join-Path $PSScriptRoot "..\test-file.md.enkrypted"
 
 if (-not (Test-Path $InputFile)) {
     throw "Input file not found: $InputFile"
