@@ -3,7 +3,7 @@
 # --------------------------------------
 Add-Type -AssemblyName System.Security
 
-$InputFile  = Join-Path $PSScriptRoot "..\test-file.md"
+$InputFile = Join-Path $PSScriptRoot "..\test-file.md"
 $OutputFile = Join-Path $PSScriptRoot "..\test-file.md.enkrypted"
 
 if (-not (Test-Path $InputFile)) {
@@ -19,6 +19,14 @@ $ProtectedBytes = [System.Security.Cryptography.ProtectedData]::Protect(
 )
 
 [System.IO.File]::WriteAllBytes($OutputFile, $ProtectedBytes)
+
+if (Test-Path $OutputFile) {
+    Remove-Item $InputFile -Force
+    Move-Item -Path $OutputFile -Destination $InputFile -Force
+}
+else {
+    Write-Error "Encryption failed: Output file not created. Original file preserved."
+}
 # --------------------------------------
 
 
