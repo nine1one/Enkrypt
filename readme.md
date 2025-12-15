@@ -1,137 +1,76 @@
-# Description
-Enkrypt is a private PowerShell-based utility for encrypting and decrypting files that contain human-readable text at rest. The tool uses the Windows Data Protection API (DPAPI) with CurrentUser scope to ensure that encrypted content can only be decrypted by the same Windows user account that performed the encryption. This repository is private and not intended for open-source distribution.
----
+# Enkrypt
 
-## Purpose
+**Enkrypt** is a lightweight, PowerShell-based utility designed for secure, user-bound file encryption on Windows. By leveraging the **Windows Data Protection API (DPAPI)**, it ensures that your sensitive files can only be decrypted by *you*—the user who encrypted them—on the same machine.
 
-- Protect sensitive registry exports from casual inspection
-- Maintain reversible encryption without managing passwords or keys
-- Keep tooling minimal, auditable, and user-owned
+> **Status**: Private / Proprietary
+> **Version**: 1.0.0
 
 ---
 
-## Project Structure
+## 🚀 Features
 
-```
-└── .enkrypt/
-    ├── enkrypt.ps1
-    └── dekrypt.ps1
-```
+-   **Seamless Integration**: Uses native Windows APIs (DPAPI) via PowerShell.
+-   **Zero Key Management**: No passwords to remember or keys to manage; your Windows identity is the key.
+-   **In-Place Operation**: Automatically replaces the source file with its encrypted counterpart (and vice-versa) to prevent data leaks.
+-   **Minimal Footprint**: Pure PowerShell implementation with no external dependencies.
 
----
+## 🛠 Usage
 
-## Requirements
+### Prerequisites
+-   **OS**: Windows 10/11 or Server.
+-   **Shell**: PowerShell 5.1 or PowerShell Core 7+.
 
-- Windows
-- PowerShell 5.1 or PowerShell 7+
-- Same Windows user context for encryption and decryption
+### Quick Start
 
----
+The toolkit consists of two primary scripts:
 
-## Usage
-
-### Encrypt
+#### 1. Encrypt a File
+Secure a clear-text file. This will generate an `.enkrypted` file and safely remove the original.
 
 ```powershell
-.\enkrypt.ps1
+.\enkrypt.ps1 -Path ".\secret-data.txt"
 ```
 
-Creates:
+**Result**: `secret-data.txt` is removed, and `secret-data.txt.enkrypted` is created.
 
-```
-test-file.md.enkrypted
-```
-
----
-
-### Decrypt
+#### 2. Decrypt a File
+Restore an encrypted file to its original state.
 
 ```powershell
-.\dekrypt.ps1
+.\dekrypt.ps1 -Path ".\secret-data.txt.enkrypted"
 ```
 
-Restores:
-
-```
-test-file.md
-```
+**Result**: `secret-data.txt.enkrypted` is removed, and `secret-data.txt` is restored.
 
 ---
 
-## Security Model
+## 🔒 Security Model
 
-* Encryption uses DPAPI (`System.Security.Cryptography.ProtectedData`)
-* Scope: `CurrentUser`
-* Files cannot be decrypted by:
+Enkrypt utilizes `System.Security.Cryptography.ProtectedData` with the **CurrentUser** scope.
 
-  * Other users
-  * Other machines
-  * SYSTEM or elevated contexts under different profiles
+| Allowed | Blocked |
+| :--- | :--- |
+| ✅ You (Same User Profile) | ❌ Other Users on the same PC |
+| ✅ Same Machine | ❌ Other Machines (even with same credentials) |
+| | ❌ SYSTEM account or Admins |
 
----
+**⚠️ Critical Warning**: Because the encryption key is tied to your Windows User Profile:
+1.  **Do not** lose access to your Windows account. Resetting your password via administrative force (outside of normal change flows) may result in permanent data loss.
+2.  **Do not** transfer `.enkrypted` files to other machines; they cannot be decrypted there.
 
-## Limitations
-
-* Not suitable for cross-user or cross-machine sharing
-* No password-based encryption
-* No integrity or tamper-detection layer
-
----
-
-## Status
-
-Stable for personal and internal use.
-
----
-
-## License
-
-This project is proprietary and private. See LICENSE file.
-
-````
-
----
-
-## `LICENSE` (Proprietary / Private Use)
+## 📂 Project Structure
 
 ```text
-Copyright (c) 2025
-
-All rights reserved.
-
-This software and associated files are proprietary and confidential.
-Unauthorized copying, modification, distribution, or use of this software,
-via any medium, is strictly prohibited without explicit written permission
-from the author.
-
-This repository is intended for private use only.
-````
-
----
-
-## Optional `.gitignore`
-
-```gitignore
-*.enkrypted
-*.log
-*.tmp
+.
+├── enkrypt.ps1         # Encryption logic
+├── dekrypt.ps1         # Decryption logic
+├── readme.md           # This documentation
+└── LICENSE             # Proprietary license terms
 ```
 
----
+## 📄 License
 
-## Optional `SECURITY.md`
+**Proprietary & Confidential**.
+All rights reserved (c) 2025.
 
-```markdown
-# Security Policy
-
-This project is private.
-
-Security issues should be handled internally by the repository owner.
-No external vulnerability reports are accepted.
-```
-
----
-
-##Answering example##
-Query: Create documentation and licensing files for a private GitHub repository.
-Answer: Provide a concise repository description, a structured README explaining purpose, usage, and security model, and a proprietary license explicitly restricting redistribution and use.
+This software is for private use only. Unauthorized distribution, modification, or use is strictly prohibited without written permission.
