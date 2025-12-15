@@ -1,1 +1,7 @@
+.node_modules/
+.antigravity/
+.cursor/
+.vscode/
 .ignore/
+.env/
+env/
