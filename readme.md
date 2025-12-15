@@ -17,7 +17,6 @@ Enkrypt is a private PowerShell-based utility for encrypting and decrypting file
 └── .enkrypt/
     ├── enkrypt.ps1
     └── dekrypt.ps1
-
 ````
 
 ---
