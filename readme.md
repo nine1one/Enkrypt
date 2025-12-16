@@ -2,7 +2,7 @@
 
 **Enkrypt** is a lightweight, PowerShell-based utility designed for secure, user-bound file encryption on Windows. By leveraging the **Windows Data Protection API (DPAPI)**, it ensures that your sensitive files can only be decrypted by *you*—the user who encrypted them—on the same machine.
 
-> **Status**: Private / Proprietary
+> **Status**: Open Source
 > **Version**: 1.0.0
 
 ---
@@ -48,11 +48,11 @@ Restore an encrypted file to its original state.
 
 Enkrypt utilizes `System.Security.Cryptography.ProtectedData` with the **CurrentUser** scope.
 
-| Allowed | Blocked |
-| :--- | :--- |
-| ✅ You (Same User Profile) | ❌ Other Users on the same PC |
-| ✅ Same Machine | ❌ Other Machines (even with same credentials) |
-| | ❌ SYSTEM account or Admins |
+| Allowed                   | Blocked                                       |
+| :------------------------ | :-------------------------------------------- |
+| ✅ You (Same User Profile) | ❌ Other Users on the same PC                  |
+| ✅ Same Machine            | ❌ Other Machines (even with same credentials) |
+|                           | ❌ SYSTEM account or Admins                    |
 
 **⚠️ Critical Warning**: Because the encryption key is tied to your Windows User Profile:
 1.  **Do not** lose access to your Windows account. Resetting your password via administrative force (outside of normal change flows) may result in permanent data loss.
@@ -65,12 +65,9 @@ Enkrypt utilizes `System.Security.Cryptography.ProtectedData` with the **Current
 ├── enkrypt.ps1         # Encryption logic
 ├── dekrypt.ps1         # Decryption logic
 ├── readme.md           # This documentation
-└── LICENSE             # Proprietary license terms
+└── LICENSE             # MIT License
 ```
 
 ## 📄 License
 
-**Proprietary & Confidential**.
-All rights reserved (c) 2025.
-
-This software is for private use only. Unauthorized distribution, modification, or use is strictly prohibited without written permission.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
