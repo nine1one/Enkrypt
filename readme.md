@@ -1,76 +1,73 @@
-# Enkrypt
+# Enkrypt V2
 
-**Enkrypt** is a lightweight, PowerShell-based utility designed for secure, user-bound file encryption on Windows. By leveraging the **Windows Data Protection API (DPAPI)**, it ensures that your sensitive files can only be decrypted by *you*—the user who encrypted them—on the same machine.
+**Enkrypt** is a production-grade, PowerShell-based utility for secure file encryption on Windows. It implements an **Envelope Encryption** model, protecting your data with **AES-256-GCM** while securing the encryption keys using the **Windows Data Protection API (DPAPI)**.
 
-> **Status**: Private / Proprietary
-> **Version**: 1.0.0
+> **Status**: Production Ready (V2)
+> **Version**: 2.0.0
+> **Cryptography**: AES-256-GCM + DPAPI
+> **Format**: JSON Header + Binary Ciphertext
 
 ---
 
-## 🚀 Features
+## 🚀 Key Features
 
--   **Seamless Integration**: Uses native Windows APIs (DPAPI) via PowerShell.
--   **Zero Key Management**: No passwords to remember or keys to manage; your Windows identity is the key.
--   **In-Place Operation**: Automatically replaces the source file with its encrypted counterpart (and vice-versa) to prevent data leaks.
--   **Minimal Footprint**: Pure PowerShell implementation with no external dependencies.
+*   **Production-Grade Cryptography**: Uses **AES-GCM** (Galois/Counter Mode) for authenticated encryption, ensuring both confidentiality and integrity.
+*   **Envelope Encryption**: Data is encrypted with a unique random key; that key is separately protected by your Windows identity.
+*   **Tamper Evidence**: GCM ensures that any modification to the encrypted file is detected, preventing decryption of corrupted or malicious data.
+*   **Metadata Header**: Files include a generic JSON header (version, algorithm info, IV, etc.) for future-proofing and auditability.
+*   **In-Place Operation**: Automatically replaces the source file with its encrypted counterpart (`.enkrypted`) to prevent data leaks.
+
+---
 
 ## 🛠 Usage
 
 ### Prerequisites
--   **OS**: Windows 10/11 or Server.
--   **Shell**: PowerShell 5.1 or PowerShell Core 7+.
 
-### Quick Start
+*   **OS**: Windows 10/11 or Server.
+*   **Environment**: PowerShell 7+ recommended (or .NET Framework 4.7+ environment).
 
-The toolkit consists of two primary scripts:
+### Commands
 
 #### 1. Encrypt a File
-Secure a clear-text file. This will generate an `.enkrypted` file and safely remove the original.
+Secure a file. Generates a random AES key, encrypts the data, wraps the key, and saves the result `[filename].enkrypted`.
 
 ```powershell
 .\enkrypt.ps1 -Path ".\secret-data.txt"
 ```
 
-**Result**: `secret-data.txt` is removed, and `secret-data.txt.enkrypted` is created.
-
 #### 2. Decrypt a File
-Restore an encrypted file to its original state.
+Restore an encrypted file. Validates integrity (AuthTag) before releasing data.
 
 ```powershell
 .\dekrypt.ps1 -Path ".\secret-data.txt.enkrypted"
 ```
 
-**Result**: `secret-data.txt.enkrypted` is removed, and `secret-data.txt` is restored.
-
 ---
 
 ## 🔒 Security Model
 
-Enkrypt utilizes `System.Security.Cryptography.ProtectedData` with the **CurrentUser** scope.
+**Enkrypt V2** uses a hybrid approach:
 
-| Allowed | Blocked |
-| :--- | :--- |
-| ✅ You (Same User Profile) | ❌ Other Users on the same PC |
-| ✅ Same Machine | ❌ Other Machines (even with same credentials) |
-| | ❌ SYSTEM account or Admins |
+1.  **Data Layer**: `AES-256-GCM`
+    *   Protecting the actual file content.
+    *   Unique 96-bit Nonce (IV) per file.
+    *   128-bit Authentication Tag.
+2.  **Key Layer**: `DPAPI` (CurrentUser)
+    *   Protecting the AES key.
+    *   The AES key is wrapped and stored in the file header.
 
-**⚠️ Critical Warning**: Because the encryption key is tied to your Windows User Profile:
-1.  **Do not** lose access to your Windows account. Resetting your password via administrative force (outside of normal change flows) may result in permanent data loss.
-2.  **Do not** transfer `.enkrypted` files to other machines; they cannot be decrypted there.
+### Recovery
+*   Files can **only** be decrypted by the **user** who encrypted them, on the **machine** where they were encrypted.
+*   If you lose your Windows profile, you lose the data (standard DPAPI behavior).
+
+---
 
 ## 📂 Project Structure
 
 ```text
 .
-├── enkrypt.ps1         # Encryption logic
-├── dekrypt.ps1         # Decryption logic
-├── readme.md           # This documentation
-└── LICENSE             # Proprietary license terms
+├── Enkrypt.psm1        # Core Crypto Module (New-EnkryptKey, Protect-File, etc.)
+├── enkrypt.ps1         # CLI Wrapper for Encryption
+├── dekrypt.ps1         # CLI Wrapper for Decryption
+└── system-upgrade.md   # Design & Upgrade Notes
 ```
-
-## 📄 License
-
-**Proprietary & Confidential**.
-All rights reserved (c) 2025.
-
-This software is for private use only. Unauthorized distribution, modification, or use is strictly prohibited without written permission.
